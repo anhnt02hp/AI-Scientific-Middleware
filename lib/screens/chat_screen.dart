@@ -1,5 +1,6 @@
 import 'package:ai_scientific_middleware/constants/constants.dart';
 import 'package:ai_scientific_middleware/services/assets_manager.dart';
+import 'package:ai_scientific_middleware/services/services.dart';
 import 'package:ai_scientific_middleware/widgets/chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -34,7 +35,9 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: (){},
+            onPressed: () async {
+              await Services.showModalSheet(context: context);
+            },
             icon: const Icon(Icons.more_vert_rounded, color: Colors.white,)
           ),
         ],
@@ -50,9 +53,12 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Flexible(
               child: ListView.builder(
-                itemCount: 6,
+                itemCount: 4,
                 itemBuilder: (context, index) {
-                  return const ChatWidget();
+                  return ChatWidget(
+                    msg: chatMessages[index]["msg"].toString(),
+                    chatIndex: int.parse(chatMessages[index]["chatIndex"].toString()),
+                  );
                 },
               ),
             ),
