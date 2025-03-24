@@ -11,7 +11,7 @@ class ApiService{
   //Get List Model
   static Future<List<ModelsModel>> getModels() async {
     try{
-      var response = await http.get(Uri.parse("$BASE_URL/models"));
+      var response = await http.get(Uri.parse("$baseURL/models"));
 
       Map jsonResponse = jsonDecode(response.body);
 
@@ -36,9 +36,9 @@ class ApiService{
     try{
       log("ModelId: $modelId");
       var response = await http.post(
-        Uri.parse("$BASE_URL/chat/completions"),
+        Uri.parse("$baseURL/chat/completions"),
         headers: {
-          'Authorization' : 'Bearer $API_KEY',
+          'Authorization' : 'Bearer $apiKey',
           "Content-Type" : "application/json",
         },
         body: jsonEncode(
@@ -65,7 +65,7 @@ class ApiService{
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(
-            msg: jsonResponse["choices"][index]["text"],
+            msg: jsonResponse["choices"][index]["message"]["content"],
             chatIndex: 1,
           )
         );
