@@ -1,10 +1,8 @@
 import 'dart:developer';
 
 import 'package:ai_scientific_middleware/constants/constants.dart';
-import 'package:ai_scientific_middleware/models/chat_model.dart';
 import 'package:ai_scientific_middleware/providers/chats_provider.dart';
 import 'package:ai_scientific_middleware/providers/models_provider.dart';
-import 'package:ai_scientific_middleware/services/api_services.dart';
 import 'package:ai_scientific_middleware/services/assets_manager.dart';
 import 'package:ai_scientific_middleware/services/services.dart';
 import 'package:ai_scientific_middleware/widgets/chat_widget.dart';
@@ -134,6 +132,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
   //Send message
   Future<void> sendMessageFCT({required ModelsProvider modelsProvider, required ChatProvider chatProvider}) async {
+    if(_isTyping) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: TextWidget(
+              label: "You can not send multiple messages at a time!",
+            ),
+            backgroundColor: Colors.red,
+          ));
+      return;
+    }
+
     if(textEditingController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -145,13 +154,14 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
     try{
+      String msg = textEditingController.text;
       setState(() {
         _isTyping = true;
-        chatProvider.addUserMessage(msg: textEditingController.text);
+        chatProvider.addUserMessage(msg: msg);
         textEditingController.clear();
         focusNode.unfocus();
       });
-      await chatProvider.sendMessageAndGetAnswer(msg: textEditingController.text, chosenModelId: modelsProvider.getCurrentModel);
+      await chatProvider.sendMessageAndGetAnswer(msg: msg, chosenModelId: modelsProvider.getCurrentModel);
       setState(() {});
     }catch (error) {
       log("Error $error");
