@@ -1,4 +1,5 @@
 import 'package:ai_scientific_middleware/constants/constants.dart';
+import 'package:ai_scientific_middleware/services/api_services.dart';
 import 'package:ai_scientific_middleware/services/assets_manager.dart';
 import 'package:ai_scientific_middleware/services/services.dart';
 import 'package:ai_scientific_middleware/widgets/chat_widget.dart';
@@ -88,8 +89,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: (){
-
+                        onPressed: () async {
+                          try{
+                            await ApiService.getModels();
+                          }catch (error) {
+                            print("Error $error");
+                          }
                         },
                         icon: const Icon(Icons.send, color: Colors.white,)
                       ),
