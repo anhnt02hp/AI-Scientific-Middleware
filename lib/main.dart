@@ -1,4 +1,5 @@
 import 'package:ai_scientific_middleware/constants/constants.dart';
+import 'package:ai_scientific_middleware/providers/chats_provider.dart';
 import 'package:ai_scientific_middleware/providers/models_provider.dart';
 import 'package:ai_scientific_middleware/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => ModelsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ChatProvider(),
         ),
       ],
       child: MaterialApp(
