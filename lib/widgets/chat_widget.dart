@@ -37,7 +37,7 @@ class ChatWidget extends StatelessWidget {
                   : const Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Icon(
                           Icons.thumb_up_alt_outlined,
                           color: Colors.white,

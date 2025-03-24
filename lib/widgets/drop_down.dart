@@ -1,7 +1,6 @@
 import 'package:ai_scientific_middleware/constants/constants.dart';
 import 'package:ai_scientific_middleware/models/models_model.dart';
 import 'package:ai_scientific_middleware/providers/models_provider.dart';
-import 'package:ai_scientific_middleware/services/api_services.dart';
 import 'package:ai_scientific_middleware/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
