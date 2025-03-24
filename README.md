@@ -1,8 +1,11 @@
 # AI_Scientific_Middleware
 
+## 1. Introduction
 AI-Scientific-Middleware is a middleware framework that enhances the usability of AI-generated scientific content by converting text-based outputs (such as LaTeX TikZ code) into visual representations.
 
-## Getting Started
+Thanks for [Build ChatGPT App in Flutter using OpenAI API - Full Course](https://www.youtube.com/watch?v=BB59SwaQjrQ) to provide me all about the UI-Flutter code.
+
+## 2. Getting Started
 
 This project is a starting point for a Flutter application.
 
