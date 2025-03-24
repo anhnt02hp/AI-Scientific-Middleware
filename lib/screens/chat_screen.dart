@@ -8,6 +8,7 @@ import 'package:ai_scientific_middleware/services/api_services.dart';
 import 'package:ai_scientific_middleware/services/assets_manager.dart';
 import 'package:ai_scientific_middleware/services/services.dart';
 import 'package:ai_scientific_middleware/widgets/chat_widget.dart';
+import 'package:ai_scientific_middleware/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -133,27 +134,33 @@ class _ChatScreenState extends State<ChatScreen> {
   }
   //Send message
   Future<void> sendMessageFCT({required ModelsProvider modelsProvider, required ChatProvider chatProvider}) async {
+    if(textEditingController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: TextWidget(
+            label: "Please type a message",
+          ),
+          backgroundColor: Colors.red,
+        ));
+      return;
+    }
     try{
       setState(() {
         _isTyping = true;
-        // chatList.add(
-        //   ChatModel(
-        //     msg: textEditingController.text,
-        //     chatIndex: 0
-        //   )
-        // );
         chatProvider.addUserMessage(msg: textEditingController.text);
         textEditingController.clear();
         focusNode.unfocus();
       });
       await chatProvider.sendMessageAndGetAnswer(msg: textEditingController.text, chosenModelId: modelsProvider.getCurrentModel);
-      // chatList.addAll(await ApiService.sendMessage(
-      //     message: textEditingController.text,
-      //     modelId: modelsProvider.getCurrentModel
-      // ));
       setState(() {});
     }catch (error) {
       log("Error $error");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: TextWidget(
+          label: error.toString(),
+        ),
+        backgroundColor: Colors.red,
+      ));
     } finally {
       setState(() {
         scrollListToEND();
