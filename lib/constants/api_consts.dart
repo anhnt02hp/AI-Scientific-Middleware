@@ -1,2 +1,2 @@
-String BASE_URL = "https://openrouter.ai/api/v1";
-String API_KEY = "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";
+String baseURL = "https://openrouter.ai/api/v1";
+String apiKey = "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";
