@@ -3,7 +3,7 @@ import requests
 url = "http://127.0.0.1:5000/render_latex"
 
 raw_text = r"""To compute \( \int x^2 \, dx \), we apply the power rule.
-Also, \( \frac{1}{x} \) becomes \( \ln|x| \)."""
+Also, \( \frac{1}{x} \) becomes \( \ln|x + 1| \)."""
 
 response = requests.post(
     url,
