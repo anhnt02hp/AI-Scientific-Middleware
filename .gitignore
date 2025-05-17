@@ -41,3 +41,45 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Flutter related
+.dart_tool/
+.build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+.idea/
+.vscode/
+*.iml
+*.lock
+*.log
+
+# Android build
+/android/app/build/
+/build/
+/.gradle/
+/local.properties
+
+# iOS build
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Pods/
+ios/Runner.xcworkspace/
+ios/build/
+
+# Backend Python
+/backend/__pycache__/
+/backend/*.pyc
+/backend/*.pyo
+/backend/.env
+/backend/venv/
+/backend/env/
+/backend/__init__.pyc
+
+# General system files
+.DS_Store
+Thumbs.db
+
