@@ -11,25 +11,47 @@ def render():
         return jsonify({"error": "Missing LaTeX code"}), 400
 
     raw_text = data["latex_code"]
-    # find all latex code in response of AI with beginning of \( ... \)
-    formulas = re.findall(r"\\\((.*?)\\\)", raw_text, re.DOTALL)
 
-    if not formulas:
-        print("⚠️ No LaTeX formulas found in:", raw_text)
-        return jsonify({"error": "No LaTeX formulas found"}), 400
+    # Find all LaTeX code with indication: \(..\), \[..], $$..$$
+    pattern = re.compile(r"(\\\((.*?)\\\)|\\\[(.*?)\\\]|\$\$(.*?)\$\$)", re.DOTALL)
 
-    images = []
-    for formula in formulas:
-        image_base64 = render_latex_to_image(f"\\[{formula}\\]")  # convert inline to block
+    matches = list(pattern.finditer(raw_text))
+    if not matches:
+        # If not LaTeX => return Text
+        return jsonify({"segments": [{"type": "text", "content": raw_text}]}), 200
+
+    segments = []
+    last_index = 0
+
+    for match in matches:
+        full_match = match.group(1)
+        # Get LaTeX code
+        formula = next((g for g in match.groups()[1:] if g is not None), "").strip()
+
+        # Add the word of the previous LaTeX code
+        if match.start() > last_index:
+            before_text = raw_text[last_index:match.start()]
+            if before_text:
+                segments.append({"type": "text", "content": before_text})
+
+        # Convert LaTeX code to Block to render more better
+        image_base64 = render_latex_to_image(f"\\[{formula}\\]")
         if image_base64:
-            images.append(image_base64)
+            segments.append({"type": "latex", "base64": image_base64})
         else:
-            print(f"Failed to render: {formula}")
+            print(f"⚠️ Failed to render formula: {formula}")
+            # If render failed, keep the LaTeX code to show
+            segments.append({"type": "text", "content": full_match})
 
-    if not images:
-        return jsonify({"error": "Rendering failed"}), 500
+        last_index = match.end()
 
-    return jsonify({"images": images})
+    # Add text of the last LaTeX code
+    if last_index < len(raw_text):
+        tail_text = raw_text[last_index:]
+        if tail_text:
+            segments.append({"type": "text", "content": tail_text})
+
+    return jsonify({"segments": segments})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
