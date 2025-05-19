@@ -12,54 +12,75 @@ def render():
 
     raw_text = data["latex_code"].strip()
 
-    # ✅ Nếu là đoạn LaTeX hoàn chỉnh từ AI (ví dụ TikZ)
-    if raw_text.startswith(r"\documentclass"):
-        image_base64 = render_latex_to_image(raw_text)
+    # Tìm tất cả các đoạn \documentclass{...} ... \end{document}
+    docclass_pattern = re.compile(r"(\\documentclass.*?\\end\{document\})", re.DOTALL)
+    docclass_matches = list(docclass_pattern.finditer(raw_text))
+
+    segments = []
+    last_index = 0
+
+    for match in docclass_matches:
+        # Xử lý phần văn bản trước đoạn \documentclass
+        if match.start() > last_index:
+            before_text = raw_text[last_index:match.start()]
+            segments.extend(parse_inline_latex(before_text))
+
+        full_latex_doc = match.group(1)
+        image_base64 = render_latex_to_image(full_latex_doc)
         if image_base64:
-            return jsonify({"segments": [{"type": "latex", "base64": image_base64}]}), 200
+            segments.append({"type": "latex", "base64": image_base64})
         else:
-            return jsonify({"error": "Failed to render TikZ"}), 500
+            print("⚠️ Failed to render TikZ block.")
+            segments.append({"type": "text", "content": full_latex_doc})
 
-    # Find all LaTeX code with indication: \(..\), \[..], $$..$$
+        last_index = match.end()
+
+    # Xử lý phần còn lại sau đoạn cuối cùng
+    if last_index < len(raw_text):
+        tail = raw_text[last_index:]
+        segments.extend(parse_inline_latex(tail))
+
+    return jsonify({"segments": segments})
+
+
+def parse_inline_latex(text):
+    """
+    Hàm phụ xử lý văn bản thường chứa công thức \(...\), \[...\], $$...$$
+    Trả về danh sách segments.
+    """
     pattern = re.compile(r"(\\\((.*?)\\\)|\\\[(.*?)\\\]|\$\$(.*?)\$\$)", re.DOTALL)
-
-    matches = list(pattern.finditer(raw_text))
+    matches = list(pattern.finditer(text))
     if not matches:
-        # If not LaTeX => return Text
-        return jsonify({"segments": [{"type": "text", "content": raw_text}]}), 200
+        return [{"type": "text", "content": text}]
 
     segments = []
     last_index = 0
 
     for match in matches:
         full_match = match.group(1)
-        # Get LaTeX code
         formula = next((g for g in match.groups()[1:] if g is not None), "").strip()
 
-        # Add the word of the previous LaTeX code
         if match.start() > last_index:
-            before_text = raw_text[last_index:match.start()]
+            before_text = text[last_index:match.start()]
             if before_text:
                 segments.append({"type": "text", "content": before_text})
 
-        # Convert LaTeX code to Block to render more better
         image_base64 = render_latex_to_image(f"\\[{formula}\\]")
         if image_base64:
             segments.append({"type": "latex", "base64": image_base64})
         else:
             print(f"⚠️ Failed to render formula: {formula}")
-            # If render failed, keep the LaTeX code to show
             segments.append({"type": "text", "content": full_match})
 
         last_index = match.end()
 
-    # Add text of the last LaTeX code
-    if last_index < len(raw_text):
-        tail_text = raw_text[last_index:]
-        if tail_text:
-            segments.append({"type": "text", "content": tail_text})
+    if last_index < len(text):
+        tail = text[last_index:]
+        if tail:
+            segments.append({"type": "text", "content": tail})
 
-    return jsonify({"segments": segments})
+    return segments
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
