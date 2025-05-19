@@ -1,0 +1,48 @@
+#View all image docker
+docker images
+
+#Build docker image 
+docker build -t flask-latex-api .
+
+#Run container from image docker that have just build
+docker run -d -p 5000:5000 --name my-flask-api flask-latex-api
+
+#Start docker container that stopped
+docker start my-flask-api
+
+#Stop running docker
+docker stop my-flask-api
+
+#See logs of running docker container with real time
+docker logs -f my-flask-api
+
+#Delete image docker with id
+docker rmi <image_id>
+
+#Delete all image docker
+docker image prune -a -f
+
+
+#Delete all container of docker
+docker container prune -f
+
+#Delete docker container with id
+docker rm c842606e36ad bb9c0ef00188 b87f81fd2636 a7cd5ed9d6ed 2e59d037887d 40df69054905
+
+
+#Update when change code in Pycharm
+docker stop my-flask-api
+docker rm my-flask-api
+docker build -t flask-latex-api .
+docker run -d -p 5000:5000 --name my-flask-api flask-latex-api
+
+#Push new docker into Docker Hub
+docker push anhnt02hp/flask-latex-api:v1
+
+
+
+
+
+
+
+
