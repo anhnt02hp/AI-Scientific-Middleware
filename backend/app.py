@@ -10,7 +10,15 @@ def render():
     if not data or "latex_code" not in data:
         return jsonify({"error": "Missing LaTeX code"}), 400
 
-    raw_text = data["latex_code"]
+    raw_text = data["latex_code"].strip()
+
+    # ✅ Nếu là đoạn LaTeX hoàn chỉnh từ AI (ví dụ TikZ)
+    if raw_text.startswith(r"\documentclass"):
+        image_base64 = render_latex_to_image(raw_text)
+        if image_base64:
+            return jsonify({"segments": [{"type": "latex", "base64": image_base64}]}), 200
+        else:
+            return jsonify({"error": "Failed to render TikZ"}), 500
 
     # Find all LaTeX code with indication: \(..\), \[..], $$..$$
     pattern = re.compile(r"(\\\((.*?)\\\)|\\\[(.*?)\\\]|\$\$(.*?)\$\$)", re.DOTALL)

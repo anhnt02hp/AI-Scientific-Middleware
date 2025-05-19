@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import uuid
 import base64
@@ -29,15 +30,22 @@ def render_latex_to_image(latex_code: str) -> str:
     aux_path = os.path.join(AUX_DIR, f"{unique_id}.aux")
     log_path = os.path.join(LOG_DIR, f"{unique_id}.log")
 
+    # Detect if it is full LaTeX document (e.g., TikZ with \documentclass)
+    is_full_document = re.search(r"\\documentclass\{.*?\}", latex_code.strip()) is not None
+
     #Create content of Latex File
-    full_latex = rf"""
-    \documentclass[preview]{{standalone}}
-    \usepackage{{tikz}}
-    \usepackage{{amsmath, amssymb, xcolor, mhchem}} % support many type of LaTeX commands
-    \begin{{document}}
-    {latex_code}
-    \end{{document}}
-    """
+    if is_full_document:
+        full_latex = latex_code.strip()
+        print("Detected full LaTeX document.")
+    else:
+        full_latex = rf"""
+        \documentclass[preview]{{standalone}}
+        \usepackage{{tikz}}
+        \usepackage{{amsmath, amssymb, xcolor, mhchem}} % support many type of LaTeX commands
+        \begin{{document}}
+        {latex_code}
+        \end{{document}}
+        """
 
     #Write file
     with open(tex_path, "w") as f:
