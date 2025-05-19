@@ -20,9 +20,11 @@ class Services {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: TextWidget(
-                    label: "Chosen Model:",
-                    fontSize: 16,
+                  child: Text(
+                    "Chosen Model:",
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Flexible(

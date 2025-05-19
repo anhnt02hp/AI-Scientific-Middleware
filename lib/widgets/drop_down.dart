@@ -36,8 +36,8 @@ class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
                       snapshot.data!.length,
                       (index) => DropdownMenuItem(
                         value: snapshot.data![index].id,
-                        child: TextWidget(
-                          label: snapshot.data![index].id,
+                        child: Text(
+                          snapshot.data![index].id,
                         )
                       )
                     ),
