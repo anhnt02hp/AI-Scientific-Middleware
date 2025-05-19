@@ -12,7 +12,10 @@ def render():
 
     raw_text = data["latex_code"].strip()
 
-    # Tìm tất cả các đoạn \documentclass{...} ... \end{document}
+    # Delete all block markdown ```latex ... ```
+    raw_text = re.sub(r"```latex(.*?)```", lambda m: m.group(1).strip(), raw_text, flags=re.DOTALL)
+
+    # Find all \documentclass{...} ... \end{document}
     docclass_pattern = re.compile(r"(\\documentclass.*?\\end\{document\})", re.DOTALL)
     docclass_matches = list(docclass_pattern.finditer(raw_text))
 
@@ -20,7 +23,7 @@ def render():
     last_index = 0
 
     for match in docclass_matches:
-        # Xử lý phần văn bản trước đoạn \documentclass
+        # Processing text before \documentclass
         if match.start() > last_index:
             before_text = raw_text[last_index:match.start()]
             segments.extend(parse_inline_latex(before_text))
@@ -35,7 +38,7 @@ def render():
 
         last_index = match.end()
 
-    # Xử lý phần còn lại sau đoạn cuối cùng
+    # Processing the last part
     if last_index < len(raw_text):
         tail = raw_text[last_index:]
         segments.extend(parse_inline_latex(tail))
@@ -45,8 +48,8 @@ def render():
 
 def parse_inline_latex(text):
     """
-    Hàm phụ xử lý văn bản thường chứa công thức \(...\), \[...\], $$...$$
-    Trả về danh sách segments.
+    Processing with AI response \(...\), \[...\], $$...$$
+    Return list of segments
     """
     pattern = re.compile(r"(\\\((.*?)\\\)|\\\[(.*?)\\\]|\$\$(.*?)\$\$)", re.DOTALL)
     matches = list(pattern.finditer(text))
