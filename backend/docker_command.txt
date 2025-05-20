@@ -22,6 +22,8 @@ docker rmi <image_id>
 #Delete all image docker
 docker image prune -a -f
 
+#Delete all dangling images (<none> repository)
+docker image prune -f
 
 #Delete all container of docker
 docker container prune -f
@@ -39,6 +41,8 @@ docker run -d -p 5000:5000 --name my-flask-api flask-latex-api
 #Push new docker into Docker Hub
 docker push anhnt02hp/flask-latex-api:v1
 
+#Create tag before push into Docker hub
+docker tag <image_name> anhnt02hp/flask-latex-api:v1
 
 
 
