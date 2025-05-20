@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:ai_scientific_middleware/services/latex_renderer_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';  // thêm
 
 class TestApiScreen extends StatefulWidget {
   @override
@@ -19,7 +21,7 @@ class _TestApiScreenState extends State<TestApiScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text("Test LaTeX API")),
+        appBar: AppBar(title: Text("Test LaTeX & Markdown API")),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -30,7 +32,7 @@ class _TestApiScreenState extends State<TestApiScreen> {
                 maxLines: null,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: "Nhập đoạn LaTeX hoặc text",
+                  labelText: "Nhập đoạn LaTeX hoặc text (hỗ trợ markdown)",
                 ),
               ),
               const SizedBox(height: 12),
@@ -70,31 +72,48 @@ class _TestApiScreenState extends State<TestApiScreen> {
                   _error!,
                   style: TextStyle(color: Colors.red),
                 ),
+
               if (_segments.isNotEmpty)
-                RichText(
-                  text: TextSpan(
-                    children: _segments.map<InlineSpan>((segment) {
-                      if (segment['type'] == 'text') {
-                        return TextSpan(
-                          text: segment['content'] ?? '',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        );
-                      } else if (segment['type'] == 'latex') {
-                        String base64Str = segment['base64'] ?? '';
-                        Uint8List bytes = base64Decode(base64Str);
-                        return WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: Image.memory(
-                            bytes,
-                            height: 20, // nhỏ gọn để vừa dòng
-                            fit: BoxFit.fitHeight,
+              // Thay vì dùng RichText, ta dùng Column chứa từng segment
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _segments.map<Widget>((segment) {
+                    if (segment['type'] == 'text') {
+                      // Render markdown cho đoạn text này
+                      return MarkdownBody(
+                        data: segment['content'] ?? '',
+                        styleSheet:
+                        MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                          p: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
                           ),
-                        );
-                      } else {
-                        return TextSpan(); // fallback
-                      }
-                    }).toList(),
-                  ),
+                          strong: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          em: const TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black,
+                          ),
+                        ),
+                      );
+                    } else if (segment['type'] == 'latex') {
+                      String base64Str = segment['base64'] ?? '';
+                      Uint8List bytes = base64Decode(base64Str);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Image.memory(
+                          bytes,
+                          height: 20,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      );
+                    } else {
+                      return SizedBox.shrink(); // fallback
+                    }
+                  }).toList(),
                 ),
             ],
           ),

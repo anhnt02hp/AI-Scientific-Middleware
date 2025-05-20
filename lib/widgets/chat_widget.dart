@@ -4,6 +4,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_scientific_middleware/services/assets_manager.dart';
 import 'dart:convert';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class ChatWidget extends StatelessWidget {
   const ChatWidget({super.key, required this.msg, required this.chatIndex, this.segments,});
@@ -61,9 +62,23 @@ class ChatWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: segments!.map((segment) {
                           if (segment['type'] == 'text') {
-                            return Text(
-                              segment['content'] ?? '',
-                              style: const TextStyle(color: Colors.black, fontSize: 16),
+                            return MarkdownBody(
+                              data: segment['content'] ?? '',
+                              styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                                p: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal, // chắc chắn p không đậm
+                                ),
+                                strong: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                em: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black,
+                                ),
+                              ),
                             );
                           } else if (segment['type'] == 'latex') {
                             try {
