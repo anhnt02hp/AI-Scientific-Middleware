@@ -3,7 +3,7 @@ import 'package:ai_scientific_middleware/services/api_services.dart';
 import 'package:flutter/cupertino.dart';
 
 class ModelsProvider with ChangeNotifier{
-  String currentModel = "open-r1/olympiccoder-32b:free";
+  String currentModel = "qwen/qwen-2.5-coder-32b-instruct:free";
 
   String get getCurrentModel {
     return currentModel;

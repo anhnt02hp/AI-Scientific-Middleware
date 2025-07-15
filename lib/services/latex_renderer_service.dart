@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class LatexRendererService {
-  final String baseUrl = 'http://192.168.92.200:5000';
+  final String baseUrl = 'http://192.168.59.200:5000';
 
   Future<List<Map<String, dynamic>>> renderLatexFromText(String latexText) async {
     final url = Uri.parse('$baseUrl/render_latex');
